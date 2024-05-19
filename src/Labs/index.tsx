@@ -6,6 +6,12 @@ import Lab3 from "./Lab3";
 export default function Labs() {
   return (
     <div>
+      {/*GitHub link*/}
+      <a id="wd-github" href="https://github.com/xiaodangaoooo/kanbas-react-web-app">View Repository on GitHub</a>
+      {/*full name*/}
+      <footer>
+        <p>Siyi Lin</p>
+      </footer> 
       <h1>Labs</h1>
       <TOC />
       <Routes>
@@ -13,13 +19,7 @@ export default function Labs() {
         <Route path="Lab1" element={<Lab1 />} />
         <Route path="Lab2" element={<Lab2 />} />
         <Route path="Lab3" element={<Lab3 />} />
-      </Routes>
-      {/*GitHub link*/}
-      <a id="wd-github" href="https://github.com/xiaodangaoooo/kanbas-react-web-app">View Repository on GitHub</a>
-      {/*full name*/}
-      <footer>
-        <p>Siyi Lin</p>
-      </footer>    
+      </Routes>   
       </div>
   );
 }
