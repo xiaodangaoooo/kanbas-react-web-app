@@ -11,6 +11,7 @@ export default function Labs() {
       {/*full name*/}
       <footer>
         <p>Siyi Lin</p>
+        <p>CS5610 Summer Full 2024</p>
       </footer> 
       <h1>Labs</h1>
       <TOC />
