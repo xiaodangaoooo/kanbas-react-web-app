@@ -1,0 +1,24 @@
+.search-container {
+  position: relative;
+  width: 20%;
+}
+
+.search-container input {
+  padding-left: 40px; 
+}
+
+.search-container .search-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px; 
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.letter-spacing {
+  letter-spacing: 0.05em;
+}
+.wd-assignment-date-info {
+  font-family: 'Roboto', sans-serif; 
+  font-size: 17px; 
+}
