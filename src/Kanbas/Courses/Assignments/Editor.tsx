@@ -1,27 +1,27 @@
+import React from 'react';
+import {useLocation} from "react-router";
 import { FaRegCalendarAlt } from "react-icons/fa";
+import { assignments } from "../../Database";
 
-export default function AssignmentEditor() {
+export default function Editor() {
+  const {pathname} = useLocation();
+
+  const aid = pathname.split("/").pop();
+  const assignment = assignments.find(a => a._id === aid);
   return (
     <div id="wd-assignments-editor" className="ms-5">
       <div className="container">
         <div className="row my-3">
           <div className="col-12">
             <label htmlFor="wd-name" className="form-label">Assignment Name</label>
-            <input id="wd-name" type="text" className="form-control" defaultValue="A1" />
+            <input id="wd-name" className="form-control" value={assignment?.title}/>
           </div>
         </div>
         <div className="row my-3">
           <div className="col-12">
-            <textarea id="wd-description" className="form-control" rows={10} defaultValue={`The assignment is available online
-Submit a link to the landing page of your Web application running on Netlify.
-
-The landing page should include the following:
-- Your full name and section
-- Links to each of the lab assignments
-- Link to the Kanbas application
-- Links to all relevant source code repositories
-
-The Kanbas application should include a link to navigate back to the landing page.`} />
+            <textarea id="wd-description" className="form-control" rows={10}>
+            {assignment?.description}
+            </textarea>
           </div>
         </div>
         <div className="row my-3">
@@ -29,7 +29,7 @@ The Kanbas application should include a link to navigate back to the landing pag
             <label htmlFor="wd-points" className="col-form-label float-end">Points</label>
           </div>
           <div className="col">
-            <input id="wd-points" type="number" className="form-control" defaultValue={100} />
+            <input id="wd-points" type="number" className="form-control" value={assignment?.points} />
           </div>
         </div>
         <div className="row my-3">
@@ -115,7 +115,7 @@ The Kanbas application should include a link to navigate back to the landing pag
                     <div className="col-12">
                       <label htmlFor="wd-due-date" className="form-label"><b>Due</b></label>
                       <div className="input-group">
-                        <input type="text" className="form-control" id="wd-due-date" defaultValue="May 13, 2024, 11:59 PM" />
+                        <input type="text" className="form-control" id="wd-due-date" value={assignment?.dueDate} />
                         <button className="btn btn-secondary" type="button" id="button-addon2">
                           <FaRegCalendarAlt />
                         </button>
@@ -126,7 +126,7 @@ The Kanbas application should include a link to navigate back to the landing pag
                     <div className="col">
                       <label htmlFor="wd-available-from" className="form-label"><b>Available from</b></label>
                       <div className="input-group">
-                        <input type="text" className="form-control" id="wd-available-from" defaultValue="May 6, 2024, 12:00 AM" />
+                        <input type="text" className="form-control" id="wd-available-from" value={assignment?.availableDate} />
                         <button className="btn btn-secondary " type="button" id="button-addon3">
                           <FaRegCalendarAlt />
                         </button>

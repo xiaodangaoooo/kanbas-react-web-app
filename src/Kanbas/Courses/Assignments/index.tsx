@@ -1,3 +1,7 @@
+import React from 'react';
+import { assignments} from "../../Database";
+import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
 import { BsGripVertical } from 'react-icons/bs';
@@ -9,6 +13,9 @@ import ControlButtons from "./ControlButtons";
 import "./index.css";
 
 export default function Assignments() {
+  const { cid } = useParams();
+  const cidAssignments = assignments.filter((assignment) => assignment.course === cid);
+
   return (
     <div className="ms-5">
       <div className="d-flex align-items-center mb-3">
@@ -48,69 +55,32 @@ export default function Assignments() {
               </div>
             </div>
             <ul className="wd-assignment-list list-group rounded-0">
-              <li className="wd-assignment-info list-group-item d-flex align-items-center">
-                <div className="ms-auto">
-                <BsGripVertical className="me-2 fs-3" />
-                <PiNotePencilBold className="text-success me-4 fs-3" />
-                </div>
-                <div className="flex-grow-1">
-                  <a className="wd-assignment-link d-block mb-1"
-                    href="#/Kanbas/Courses/1234/Assignments/123" 
-                    style={{ textDecoration: 'none', color: 'black', fontWeight: 'bold' }}>
-                    A1 - ENV + HTML
-                  </a>
-                  <span className="wd-assignment-date-info letter-spacing">
-                  <span style={{ color: 'red'}}>Multiple Modules</span> | <b>Not available until</b> May 6 at 12:00am |
-                    <br />
-                    <b>Due</b> May 13 at 11:59pm | 100 pts
-                  </span>
-                </div>
-                <div className="ms-auto">
-                  <ControlButtons />
-                </div>
-              </li>
-              <li className="wd-assignment-info list-group-item d-flex align-items-center">
-                <div className="ms-auto">
-                <BsGripVertical className="me-2 fs-3" />
-                <PiNotePencilBold className="text-success me-4 fs-3" />
-                </div>
-                <div className="flex-grow-1">
-                  <a className="wd-assignment-link d-block mb-1"
-                    href="#/Kanbas/Courses/1234/Assignments/123" 
-                    style={{ textDecoration: 'none', color: 'black', fontWeight: 'bold' }}>
-                    A2 - CSS + BOOTSTRAP
-                  </a>
-                  <span className="wd-assignment-date-info letter-spacing">
-                  <span style={{ color: 'red'}}>Multiple Modules</span> | <b>Not available until</b> May 13 at 12:00am |
-                    <br />
-                    <b>Due</b> May 20 at 11:59pm | 100 pts
-                  </span>
-                </div>
-                <div className="ms-auto">
-                  <ControlButtons />
-                </div>
-              </li>
-              <li className="wd-assignment-info list-group-item d-flex align-items-center">
-                <div className="ms-auto">
-                <BsGripVertical className="me-2 fs-3" />
-                <PiNotePencilBold className="text-success me-4 fs-3" />
-                </div>
-                <div className="flex-grow-1">
-                  <a className="wd-assignment-link d-block mb-1 "
-                    href="#/Kanbas/Courses/1234/Assignments/123" 
-                    style={{ textDecoration: 'none', color: 'black', fontWeight: 'bold' }}>
-                    A3 - JAVASCRIPT + REACT
-                  </a>
-                  <span className="wd-assignment-date-info letter-spacing">
-                  <span style={{ color: 'red'}}>Multiple Modules</span> | <b>Not available until</b> May 20 at 12:00am |
-                    <br />
-                    <b>Due</b> May 27 at 11:59pm | 100 pts
-                  </span>
-                </div>
-                <div className="ms-auto">
-                  <ControlButtons />
-                </div>
-              </li>
+              {cidAssignments.map((assignment) => (
+                <li key={assignment._id} className="wd-assignment-info list-group-item d-flex align-items-center">
+                  <div className="ms-auto">
+                    <BsGripVertical className="me-2 fs-3" />
+                    <PiNotePencilBold className="text-success me-4 fs-3" />
+                  </div>
+                  <div className="flex-grow-1">
+                    <Link
+                      to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
+                      className="wd-assignment-link d-block mb-1"
+                      style={{ textDecoration: 'none', color: 'black', fontWeight: 'bold' }}
+                    >
+                      {assignment.title}
+                    </Link>
+                    <span className="wd-assignment-date-info letter-spacing">
+                      <span style={{ color: 'red' }}>Multiple Modules</span> |{' '}
+                      <b>Not available until</b> {assignment.availableDate} |
+                      <br />
+                      <b>Due</b> {assignment.dueDate} | {assignment.points} pts
+                    </span>
+                  </div>
+                  <div className="ms-auto">
+                    <ControlButtons />
+                  </div>
+                </li>
+              ))}
             </ul>
           </li>
         </ul>

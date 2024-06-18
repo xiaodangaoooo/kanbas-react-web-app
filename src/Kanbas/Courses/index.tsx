@@ -4,28 +4,21 @@ import Home from "./Home";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import Grades from "./Grades";
-import { Navigate, Route, Routes, useLocation } from "react-router";
-import { HiBars3 } from "react-icons/hi2";
-import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { Navigate, Route, Routes, useParams, useLocation } from "react-router";
+import {FaAlignJustify} from "react-icons/fa";
+import { courses } from "../Database";
 
 export default function Courses() {
-  const location = useLocation();
-  const currentPage = location.pathname.split("/").pop();
+  const { cid } = useParams();
+  const course = courses.find((course) => course._id === cid);
+  const { pathname } = useLocation();
   const courseName = "Course 1234";
 
   return (
     <div id="wd-courses">
       <h2 className="text-danger">
-        <nav aria-label="breadcrumb" className="d-flex align-items-center">
-          <HiBars3 className="me-3 fs-2" />
-        <ol className="breadcrumb mb-0">
-          <li className="breadcrumb-item">{courseName}</li>
-          <MdOutlineKeyboardArrowRight className="mx-2" style={{ color: 'gray' }} />
-          <li className="breadcrumb-item active" aria-current="page">
-            {currentPage}
-          </li>
-        </ol>
-        </nav>
+        <FaAlignJustify className="me-3 fs-4 mb-1" />
+        {course && course.name} &gt; {pathname.split("/")[4]}
       </h2>
       <hr />
       <div className="d-flex">
