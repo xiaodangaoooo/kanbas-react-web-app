@@ -1,5 +1,4 @@
-import React from 'react';
-import { assignments} from "../../Database";
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { CiSearch } from "react-icons/ci";
@@ -9,13 +8,35 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { BsPlus } from "react-icons/bs";
 import { PiNotePencilBold } from "react-icons/pi";
+import { FaRegTrashAlt } from "react-icons/fa";
 import ControlButtons from "./ControlButtons";
+import { Modal, Button } from 'react-bootstrap';
+import { deleteAssignment } from './reducer';
+import { useDispatch, useSelector } from 'react-redux';
 import "./index.css";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const cidAssignments = assignments.filter((assignment) => assignment.course === cid);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);  
+  const assignments = useSelector((state: any) => state.assignments.assignments);
+  const cidAssignments = assignments.filter((assignment: any) => assignment.course === cid);
+    const dispatch = useDispatch();
+  const handleDelete = (assignmentId: string) => {
+    setSelectedAssignmentId(assignmentId);
+    setShowModal(true);
+  };
 
+  const confirmDelete = () => {
+    if (selectedAssignmentId) {
+      dispatch(deleteAssignment(selectedAssignmentId));
+      setShowModal(false);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
   return (
     <div className="ms-5">
       <div className="d-flex align-items-center mb-3">
@@ -33,10 +54,10 @@ export default function Assignments() {
             <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
             Group
           </button>
-          <button id="wd-add-assignment" className="btn btn-lg btn-danger me-2">
+          <Link to={`/Kanbas/Courses/${cid}/Assignments/new`} className="btn btn-lg btn-danger me-2">
             <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
             Assignment
-          </button>
+          </Link>
         </div>
       </div>
       <div id="wd-assignments" className="pd-4">
@@ -55,20 +76,22 @@ export default function Assignments() {
               </div>
             </div>
             <ul className="wd-assignment-list list-group rounded-0">
-              {cidAssignments.map((assignment) => (
+              {cidAssignments.map((assignment: any) => (
                 <li key={assignment._id} className="wd-assignment-info list-group-item d-flex align-items-center">
                   <div className="ms-auto">
                     <BsGripVertical className="me-2 fs-3" />
-                    <PiNotePencilBold className="text-success me-4 fs-3" />
+                    <Link to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}>
+                    <PiNotePencilBold className="text-success me-4 fs-3" style={{ cursor: 'pointer' }}/>
+                    </Link>
                   </div>
                   <div className="flex-grow-1">
-                    <Link
-                      to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
-                      className="wd-assignment-link d-block mb-1"
-                      style={{ textDecoration: 'none', color: 'black', fontWeight: 'bold' }}
-                    >
-                      {assignment.title}
-                    </Link>
+                  <Link
+                    to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
+                    className="wd-assignment-link d-block mb-1"
+                    style={{ textDecoration: 'none', color: 'black', fontWeight: 'bold' }}
+                  >
+                    {assignment.title}
+                  </Link>
                     <span className="wd-assignment-date-info letter-spacing">
                       <span style={{ color: 'red' }}>Multiple Modules</span> |{' '}
                       <b>Not available until</b> {assignment.availableDate} |
@@ -77,6 +100,11 @@ export default function Assignments() {
                     </span>
                   </div>
                   <div className="ms-auto">
+                  <FaRegTrashAlt
+                className="text-danger me-3"
+                onClick={() => handleDelete(assignment._id)}
+                style={{ cursor: 'pointer' }}
+              />
                     <ControlButtons />
                   </div>
                 </li>
@@ -84,6 +112,16 @@ export default function Assignments() {
             </ul>
           </li>
         </ul>
+        <Modal show={showModal} onHide={closeModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Assignment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to remove this assignment?</Modal.Body>
+        <Modal.Footer>
+          <Button onClick={closeModal}>No</Button>
+          <Button onClick={confirmDelete}>Yes</Button>
+        </Modal.Footer>
+      </Modal>
       </div>
     </div>
   );

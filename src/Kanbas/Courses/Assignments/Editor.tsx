@@ -1,27 +1,77 @@
-import React from 'react';
-import {useLocation} from "react-router";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import { FaRegCalendarAlt } from "react-icons/fa";
-import { assignments } from "../../Database";
+import { addAssignment, updateAssignment } from "./reducer";
+import { RootState } from '../../store'; 
 
-export default function Editor() {
-  const {pathname} = useLocation();
+export default function AssignmentEditor() {
+  const { cid, aid } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const assignments = useSelector((state: RootState) => state.assignments.assignments);
 
-  const aid = pathname.split("/").pop();
-  const assignment = assignments.find(a => a._id === aid);
+  const [assignment, setAssignment] = useState({
+    _id: '',
+    title: '',
+    description: '',
+    points: 0,
+    dueDate: '',
+    availableDate: '',
+    availableUntil: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { id, value, type } = e.target;
+    setAssignment(prev => ({
+      ...prev,
+      [id]: type === 'number' ? parseInt(value, 10) : value,
+    }));
+  };
+
+  useEffect(() => {
+    if (aid && aid !== 'new') {
+      const existingAssignment = assignments.find(a => a._id === aid);
+      if (existingAssignment) {
+        setAssignment({
+          _id: existingAssignment._id,
+          title: existingAssignment.title,
+          description: existingAssignment.description,
+          points: existingAssignment.points,
+          dueDate: existingAssignment.dueDate,
+          availableDate: existingAssignment.availableDate,
+          availableUntil: existingAssignment.availableUntil
+        });
+      }
+    }
+  }, [aid, assignments]);
+  
+  const handleSave = () => {
+    if (aid && aid !== 'new') {
+      dispatch(updateAssignment({ ...assignment, course: cid }));
+    } else {
+      dispatch(addAssignment({ ...assignment, _id: new Date().getTime().toString(), course: cid }));
+    }
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
+
+  const handleCancel = () => {
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
+
   return (
     <div id="wd-assignments-editor" className="ms-5">
       <div className="container">
         <div className="row my-3">
           <div className="col-12">
-            <label htmlFor="wd-name" className="form-label">Assignment Name</label>
-            <input id="wd-name" className="form-control" value={assignment?.title}/>
+          <label htmlFor="title" className="form-label">Assignment Name</label>
+            <input id="title" className="form-control" value={assignment.title} onChange={handleChange}/>
           </div>
         </div>
         <div className="row my-3">
           <div className="col-12">
-            <textarea id="wd-description" className="form-control" rows={10}>
-            {assignment?.description}
-            </textarea>
+            <label htmlFor="description" className="form-label">Description</label>
+            <textarea id="description" className="form-control" rows={10} value={assignment.description} onChange={handleChange}></textarea>
           </div>
         </div>
         <div className="row my-3">
@@ -29,7 +79,7 @@ export default function Editor() {
             <label htmlFor="wd-points" className="col-form-label float-end">Points</label>
           </div>
           <div className="col">
-            <input id="wd-points" type="number" className="form-control" value={assignment?.points} />
+          <input id="points" type="number" className="form-control" value={assignment.points} onChange={handleChange}/>
           </div>
         </div>
         <div className="row my-3">
@@ -115,7 +165,7 @@ export default function Editor() {
                     <div className="col-12">
                       <label htmlFor="wd-due-date" className="form-label"><b>Due</b></label>
                       <div className="input-group">
-                        <input type="text" className="form-control" id="wd-due-date" value={assignment?.dueDate} />
+                      <input type="date" className="form-control" id="dueDate" value={assignment.dueDate} onChange={handleChange}/>
                         <button className="btn btn-secondary" type="button" id="button-addon2">
                           <FaRegCalendarAlt />
                         </button>
@@ -126,7 +176,7 @@ export default function Editor() {
                     <div className="col">
                       <label htmlFor="wd-available-from" className="form-label"><b>Available from</b></label>
                       <div className="input-group">
-                        <input type="text" className="form-control" id="wd-available-from" value={assignment?.availableDate} />
+                      <input type="date" className="form-control" id="availableDate" value={assignment.availableDate} onChange={handleChange}/>
                         <button className="btn btn-secondary " type="button" id="button-addon3">
                           <FaRegCalendarAlt />
                         </button>
@@ -135,7 +185,7 @@ export default function Editor() {
                     <div className="col">
                       <label htmlFor="wd-available-until" className="form-label"><b>Until</b></label>
                       <div className="input-group">
-                        <input type="text" className="form-control" id="wd-available-until" />
+                      <input type="date" className="form-control" id="availableUntil" value={assignment.availableUntil} onChange={handleChange}/>
                         <button className="btn btn-secondary" type="button" id="button-addon4">
                           <FaRegCalendarAlt />
                         </button>
@@ -150,8 +200,8 @@ export default function Editor() {
         <div className="row">
           <hr />
           <div className="col-12 d-flex justify-content-end">
-            <button type="button" className="btn btn-secondary me-2">Cancel</button>
-            <button type="button" className="btn btn-danger">Save</button>
+          <button type="button" className="btn btn-secondary me-2" onClick={handleCancel}>Cancel</button>
+            <button type="button" className="btn-danger btn btn-primary" onClick={handleSave}>Save</button>
           </div>
         </div>
       </div>
