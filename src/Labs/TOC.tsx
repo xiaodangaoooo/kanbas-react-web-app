@@ -25,6 +25,11 @@ export default function TOC() {
           My Node Server
         </a>
       </li>
+      <li className="nav-item">
+        <a id="wd-render" href="https://kanbas-node-server-app-hs5n.onrender.com" target="_blank" className="nav-link">
+          The root of the server running on Render
+        </a>
+      </li>
     </ul>
   );
 }
