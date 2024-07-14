@@ -3,14 +3,14 @@ import { useParams, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { addAssignment, updateAssignment } from "./reducer";
-import { RootState } from '../../store'; 
+import * as client from "./client";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const assignments = useSelector((state: RootState) => state.assignments.assignments);
-
+  const assignments = useSelector((state: any) => state.assignments?.assignments || []);
+  
   const [assignment, setAssignment] = useState({
     _id: '',
     title: '',
@@ -30,27 +30,25 @@ export default function AssignmentEditor() {
   };
 
   useEffect(() => {
-    if (aid && aid !== 'new') {
-      const existingAssignment = assignments.find(a => a._id === aid);
-      if (existingAssignment) {
-        setAssignment({
-          _id: existingAssignment._id,
-          title: existingAssignment.title,
-          description: existingAssignment.description,
-          points: existingAssignment.points,
-          dueDate: existingAssignment.dueDate,
-          availableDate: existingAssignment.availableDate,
-          availableUntil: existingAssignment.availableUntil
-        });
+    const fetchAssignment = async () => {
+      if (aid && aid !== 'new') {
+        const fetchedAssignments = await client.findAssignmentsForCourse(cid as string);
+        const existingAssignment = fetchedAssignments.find((a: any) => a._id === aid);
+        if (existingAssignment) {
+          setAssignment(existingAssignment);
+        }
       }
-    }
-  }, [aid, assignments]);
+    };
+    fetchAssignment();
+  }, [aid, cid]);
   
-  const handleSave = () => {
+  const handleSave = async () => {
     if (aid && aid !== 'new') {
-      dispatch(updateAssignment({ ...assignment, course: cid }));
+      const updatedAssignment = await client.updateAssignment({ ...assignment, course: cid });
+      dispatch(updateAssignment(updatedAssignment));
     } else {
-      dispatch(addAssignment({ ...assignment, _id: new Date().getTime().toString(), course: cid }));
+      const newAssignment = await client.createAssignment(cid as string, { ...assignment, course: cid });
+      dispatch(addAssignment(newAssignment));
     }
     navigate(`/Kanbas/Courses/${cid}/Assignments`);
   };

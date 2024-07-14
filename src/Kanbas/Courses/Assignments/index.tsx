@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { CiSearch } from "react-icons/ci";
@@ -11,8 +11,9 @@ import { PiNotePencilBold } from "react-icons/pi";
 import { FaRegTrashAlt } from "react-icons/fa";
 import ControlButtons from "./ControlButtons";
 import { Modal, Button } from 'react-bootstrap';
-import { deleteAssignment } from './reducer';
 import { useDispatch, useSelector } from 'react-redux';
+import { setAssignments, deleteAssignment } from './reducer';
+import * as client from "./client";
 import "./index.css";
 
 export default function Assignments() {
@@ -21,14 +22,24 @@ export default function Assignments() {
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);  
   const assignments = useSelector((state: any) => state.assignments.assignments);
   const cidAssignments = assignments.filter((assignment: any) => assignment.course === cid);
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      const fetchedAssignments = await client.findAssignmentsForCourse(cid as string);
+      dispatch(setAssignments(fetchedAssignments));
+    };
+    fetchAssignments();
+  }, [cid, dispatch]);
+
   const handleDelete = (assignmentId: string) => {
     setSelectedAssignmentId(assignmentId);
     setShowModal(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedAssignmentId) {
+      await client.deleteAssignment(selectedAssignmentId);
       dispatch(deleteAssignment(selectedAssignmentId));
       setShowModal(false);
     }
