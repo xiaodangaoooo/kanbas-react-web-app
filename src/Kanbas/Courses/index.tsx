@@ -5,12 +5,10 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import Grades from "./Grades";
 import PeopleTable from "./People/Table";
-import PeopleDetails from "./People/Details";
 import { Navigate, Route, Routes, useParams, useLocation } from "react-router";
 import {FaAlignJustify} from "react-icons/fa";
-
 export default function Courses({ courses }: { courses: any[]; }) {
-  const { cid } = useParams();
+  const { cid, aid } = useParams();
   const course = courses.find((course) => course._id === cid);
   const { pathname } = useLocation();
 

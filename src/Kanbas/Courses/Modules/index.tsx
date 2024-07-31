@@ -26,13 +26,15 @@ export default function Modules() {
     const modules = await client.findModulesForCourse(cid as string);
     dispatch(setModules(modules));
   };
-  useEffect(() => {
-    fetchModules();
-  }, []);
+
   const saveModule = async (module: any) => {
     const status = await client.updateModule(module);
     dispatch(updateModule(module));
   };
+  
+  useEffect(() => {
+    fetchModules();
+  }, [modules.length]);
 
   return (
     <div className="wd-modules">
